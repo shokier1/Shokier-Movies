@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React , {useState , useEffect} from 'react'
+import Header from './components/Header'
+import Home from './components/Home'
+import Footer from './components/Footer'
+import Details from './components/Details'
+import { Route, Routes } from 'react-router-dom'
+
+import axios from 'axios'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  
+  const [movies , setMovies] = useState ([])
 
-export default App;
+  const getAllMovies = async ()=>{
+    const res = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=52ef927bbeb21980cd91386a29403c78&language=ar`)
+    setMovies (res.data.results); 
+ } //getAllMovies
+
+    const search = async (word)=>{
+      const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=52ef927bbeb21980cd91386a29403c78&query=${word}&language=ar`)
+      setMovies (res.data.results) ;
+  }//search
+ 
+  useEffect( ()=>{
+    getAllMovies()
+  } , [])  
+   
+  return (
+    <>
+   <Header search={search} />
+   <Routes>
+  <Route path='/' element={<Home movies={movies} />}/>
+  <Route path='/details/:id' element={<Details/>}/>
+   </Routes>
+    
+   <Footer/>
+    </>
+  )
+  }
+
+
+export default App 
